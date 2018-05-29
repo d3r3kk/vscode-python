@@ -14,16 +14,20 @@ import * as path from 'path';
 import { MochaSetupOptions } from 'vscode/lib/testrunner';
 import * as vscodeMoscks from './vscode-mock';
 
-export function runTests(testOptions?: { grep?: string; timeout?: number }) {
+export function runTests(testOptions?: { grep?: string; timeout?: number; reporter? : string; reporterOpts? : string }) {
     vscodeMoscks.initialize();
 
     const grep: string | undefined = testOptions ? testOptions.grep : undefined;
     const timeout: number | undefined = testOptions ? testOptions.timeout : undefined;
+    const reporter: string | undefined = testOptions ? testOptions.reporter : undefined;
+    //const reporterOptions: any | undefined = testOptions ? testOptions.reporterOpts : undefined;
+
     const options: MochaSetupOptions = {
         ui: 'tdd',
         useColors: true,
         timeout,
-        grep
+        grep,
+        reporter
     };
     const mocha = new Mocha(options);
     require('source-map-support').install();
@@ -65,9 +69,14 @@ if (require.main === module) {
     const args = process.argv0.length > 2 ? process.argv.slice(2) : [];
     const timeoutArgIndex = args.findIndex(arg => arg.startsWith('timeout='));
     const grepArgIndex = args.findIndex(arg => arg.startsWith('grep='));
+    const reporterArgIndex = args.findIndex(arg => arg.startsWith('reporter='));
+    //const reporterOptsIndex = args.findIndex(arg => arg.startsWith('reporterOptions='));
     const timeout: number | undefined = timeoutArgIndex >= 0 ? parseInt(args[timeoutArgIndex].split('=')[1].trim(), 10) : undefined;
-    let grep: string | undefined = timeoutArgIndex >= 0 ? args[grepArgIndex].split('=')[1].trim() : undefined;
+    let grep: string | undefined = grepArgIndex >= 0 ? args[grepArgIndex].split('=')[1].trim() : undefined;
     grep = grep && grep.length > 0 ? grep : undefined;
+    const reporter: string | undefined = reporterArgIndex >= 0 ? args[reporterArgIndex].split('=')[1].trim() : undefined;
+//    const reporterOpts: string | undefined = reporterOptsIndex >= 0 ? args[reporterOptsIndex].split('=')[1].trim() : undefined;
 
-    runTests({ grep, timeout });
+//    runTests({ grep, timeout, reporter, reporterOpts });
+    runTests({ grep, timeout, reporter });
 }
