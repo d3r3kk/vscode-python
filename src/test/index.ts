@@ -19,11 +19,13 @@ const grep = IS_CI_SERVER && IS_CI_SERVER_TEST_DEBUGGER ? 'Debug' : undefined;
 // See https://github.com/mochajs/mocha/wiki/Using-mocha-programmatically#set-options for more info.
 // Hack, as retries is not supported as setting in tsd.
 const options: MochaSetupOptions & { retries: number } = {
-    ui: 'tdd',
-    useColors: true,
+    ui: 'qunit',
+    useColors: false,
     timeout: 25000,
     retries: 3,
-    grep
+    grep,
+    reporter: 'xunit'
 };
+
 testRunner.configure(options, { coverageConfig: '../coverconfig.json' });
 module.exports = testRunner;
