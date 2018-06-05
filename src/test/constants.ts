@@ -8,7 +8,7 @@ export const IS_APPVEYOR = process.env.APPVEYOR === 'true';
 export const IS_TRAVIS = process.env.TRAVIS === 'true';
 export const IS_VSTS = process.env.TF_BUILD === 'true';
 export const IS_CI_SERVER = IS_TRAVIS || IS_APPVEYOR || IS_VSTS;
-export const TEST_RESULT_RESULTFILE_ENV = process.env.VSCODE_PYTHON_TESTRESULTFILE;
+export const TEST_RESULTFILE_ENV = process.env.VSCODE_PYTHON_TESTRESULTFILE;
 export const TEST_TIMEOUT = 25000;
 export const IS_MULTI_ROOT_TEST = isMultitrootTest();
 export const IS_CI_SERVER_TEST_DEBUGGER = process.env.IS_CI_SERVER_TEST_DEBUGGER === '1';
