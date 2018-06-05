@@ -11,19 +11,25 @@ if ((Reflect as any).metadata === undefined) {
 import * as glob from 'glob';
 import * as Mocha from 'mocha';
 import * as path from 'path';
-import { MochaSetupOptions } from 'vscode/lib/testrunner';
+import { VSCodePythonMochaOpts } from './common';
 import * as vscodeMoscks from './vscode-mock';
 
-export function runTests(testOptions?: { grep?: string; timeout?: number }) {
+export function runTests(testOptions?: { grep?: string; timeout?: number; reporter? : string; reporterOpts? : any }) {
     vscodeMoscks.initialize();
 
     const grep: string | undefined = testOptions ? testOptions.grep : undefined;
     const timeout: number | undefined = testOptions ? testOptions.timeout : undefined;
-    const options: MochaSetupOptions = {
+    const reporter: string | undefined = testOptions ? testOptions.reporter : undefined;
+    const reporterOptions: any | undefined = testOptions ? testOptions.reporterOpts : undefined;
+
+    const options: VSCodePythonMochaOpts = {
         ui: 'tdd',
         useColors: true,
         timeout,
-        grep
+        grep,
+        retries: 3,
+        reporter: reporter,
+        reporterOptions: reporterOptions
     };
     const mocha = new Mocha(options);
     require('source-map-support').install();
@@ -66,8 +72,7 @@ if (require.main === module) {
     const timeoutArgIndex = args.findIndex(arg => arg.startsWith('timeout='));
     const grepArgIndex = args.findIndex(arg => arg.startsWith('grep='));
     const timeout: number | undefined = timeoutArgIndex >= 0 ? parseInt(args[timeoutArgIndex].split('=')[1].trim(), 10) : undefined;
-    let grep: string | undefined = timeoutArgIndex >= 0 ? args[grepArgIndex].split('=')[1].trim() : undefined;
+    let grep: string | undefined = grepArgIndex >= 0 ? args[grepArgIndex].split('=')[1].trim() : undefined;
     grep = grep && grep.length > 0 ? grep : undefined;
-
     runTests({ grep, timeout });
 }

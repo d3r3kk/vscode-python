@@ -3,8 +3,10 @@ if ((Reflect as any).metadata === undefined) {
     // tslint:disable-next-line:no-require-imports no-var-requires
     require('reflect-metadata');
 }
-import { MochaSetupOptions } from 'vscode/lib/testrunner';
-import { IS_CI_SERVER, IS_CI_SERVER_TEST_DEBUGGER, IS_MULTI_ROOT_TEST } from './constants';
+
+import { VSCodePythonMochaOpts } from './common';
+import { IS_CI_SERVER, IS_CI_SERVER_TEST_DEBUGGER,
+         IS_MULTI_ROOT_TEST, TEST_RESULTFILE_ENV } from './constants';
 import * as testRunner from './testRunner';
 
 process.env.VSC_PYTHON_CI_TEST = '1';
@@ -18,12 +20,18 @@ const grep = IS_CI_SERVER && IS_CI_SERVER_TEST_DEBUGGER ? 'Debug' : undefined;
 // You can directly control Mocha options by uncommenting the following lines.
 // See https://github.com/mochajs/mocha/wiki/Using-mocha-programmatically#set-options for more info.
 // Hack, as retries is not supported as setting in tsd.
-const options: MochaSetupOptions & { retries: number } = {
+const options: VSCodePythonMochaOpts = {
     ui: 'tdd',
-    useColors: true,
+    useColors: false,
     timeout: 25000,
     retries: 3,
     grep
 };
+
+if (IS_CI_SERVER && TEST_RESULTFILE_ENV !== undefined && TEST_RESULTFILE_ENV.length > 0) {
+    options.reporter = 'xunit';
+    options.reporterOptions = { output: TEST_RESULTFILE_ENV };
+}
+
 testRunner.configure(options, { coverageConfig: '../coverconfig.json' });
 module.exports = testRunner;

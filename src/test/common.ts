@@ -22,6 +22,23 @@ export type PythonSettingKeys = 'workspaceSymbols.enabled' | 'pythonPath' |
     'unitTest.nosetestsEnabled' | 'unitTest.pyTestEnabled' | 'unitTest.unittestEnabled' |
     'envFile';
 
+export type VSCodePythonMochaReporterOpts = {
+    output: string;
+};
+
+export type VSCodePythonMochaOpts = {
+// tslint:disable-next-line:no-any
+    grep?: any;
+    ui?: string;
+    useColors?: boolean;
+    reporter?: string | ReporterConstructor;
+    timeout?: number;
+    retries?: number;
+    reporterOptions?: VSCodePythonMochaReporterOpts;
+    slow?: number;
+    bail?: boolean;
+};
+
 export async function updateSetting(setting: PythonSettingKeys, value: {} | undefined, resource: Uri | undefined, configTarget: ConfigurationTarget) {
     const settings = workspace.getConfiguration('python', resource);
     const currentValue = settings.inspect(setting);
