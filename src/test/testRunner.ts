@@ -10,7 +10,7 @@ import * as glob from 'glob';
 import * as istanbul from 'istanbul';
 import * as Mocha from 'mocha';
 import * as path from 'path';
-import { MochaSetupOptions } from 'vscode/lib/testrunner';
+import { VSCodePythonMochaOpts } from './common';
 const remapIstanbul = require('remap-istanbul');
 
 interface ITestRunnerOptions {
@@ -25,13 +25,13 @@ interface ITestRunnerOptions {
 
 // http://gotwarlost.github.io/istanbul/public/apidocs/files/lib_instrumenter.js.html#l478.
 type CoverState = {
-    path: string,
-    s: {},
-    b: {},
-    f: {},
-    fnMap: {},
-    statementMap: {},
-    branchMap: {}
+    path: string;
+    s: {};
+    b: {};
+    f: {};
+    fnMap: {};
+    statementMap: {};
+    branchMap: {};
 };
 
 type Instrumenter = istanbul.Instrumenter & { coverState: CoverState };
@@ -51,7 +51,7 @@ let mocha = new Mocha(<any>{
 
 let coverageOptions: { coverageConfig: string } | undefined;
 
-export function configure(mochaOpts: MochaSetupOptions, coverageOpts?: { coverageConfig: string }): void {
+export function configure(mochaOpts: VSCodePythonMochaOpts, coverageOpts?: { coverageConfig: string }): void {
     mocha = new Mocha(mochaOpts);
     coverageOptions = coverageOpts;
 }
@@ -94,7 +94,7 @@ function getCoverageOptions(testsRoot: string): ITestRunnerOptions | undefined {
 class CoverageRunner {
     private coverageVar: string = `$$cov_${new Date().getTime()}$$`;
     private sourceFiles: string[] = [];
-    private instrumenter: Instrumenter;
+    private instrumenter: Instrumenter = null;
 
     private get coverage(): { [key: string]: CoverState } {
         if (global[this.coverageVar] === undefined || Object.keys(global[this.coverageVar]).length === 0) {

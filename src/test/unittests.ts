@@ -11,24 +11,25 @@ if ((Reflect as any).metadata === undefined) {
 import * as glob from 'glob';
 import * as Mocha from 'mocha';
 import * as path from 'path';
-import { MochaSetupOptions } from 'vscode/lib/testrunner';
+import { VSCodePythonMochaOpts } from './common';
 import * as vscodeMoscks from './vscode-mock';
 
-export function runTests(testOptions?: { grep?: string; timeout?: number; reporter? : string; reporterOpts? : string }) {
+export function runTests(testOptions?: { grep?: string; timeout?: number; reporter? : string; reporterOpts? : any }) {
     vscodeMoscks.initialize();
 
     const grep: string | undefined = testOptions ? testOptions.grep : undefined;
     const timeout: number | undefined = testOptions ? testOptions.timeout : undefined;
+    const reporter: string | undefined = testOptions ? testOptions.reporter : undefined;
+    const reporterOptions: any | undefined = testOptions ? testOptions.reporterOpts : undefined;
 
-    const options: MochaSetupOptions & { retries: number; reporterOptions: { output: string } } = {
-
+    const options: VSCodePythonMochaOpts = {
         ui: 'tdd',
         useColors: true,
         timeout,
         grep,
-        reporter: 'xunit',
-        reporterOptions: { output: 'dereks-output.xml' },
-        retries: 3
+        retries: 3,
+        reporter: reporter,
+        reporterOptions: reporterOptions
     };
     const mocha = new Mocha(options);
     require('source-map-support').install();
