@@ -25,7 +25,19 @@ export function runTests(testOptions?: { grep?: string; timeout?: number }) {
         timeout,
         grep
     };
-    const mocha = new Mocha(options);
+    const mocha: Mocha = new Mocha({
+        grep: new RegExp(grep),
+        ui: 'tdd',
+        reporter: path.join(__dirname, '../../.mocha-reporter/mocha-vsts-reporter.js'),
+        timeout: timeout,
+        reporterOptions: {
+            useColors: false,
+            mochaFile: './derek-this-is-testlog.json',
+            toConsole: true
+         },
+        slow: null,
+        bail: false
+    });
     require('source-map-support').install();
     const testsRoot = __dirname;
     glob('**/**.unit.test.js', { cwd: testsRoot }, (error, files) => {
