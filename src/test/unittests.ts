@@ -11,31 +11,31 @@ if ((Reflect as any).metadata === undefined) {
 import * as glob from 'glob';
 import * as Mocha from 'mocha';
 import * as path from 'path';
-import { MochaSetupOptions } from 'vscode/lib/testrunner';
+// import { MochaSetupOptions } from 'vscode/lib/testrunner';
 import * as vscodeMoscks from './vscode-mock';
 
 export function runTests(testOptions?: { grep?: string; timeout?: number }) {
     vscodeMoscks.initialize();
 
-    const grep: string | undefined = testOptions ? testOptions.grep : undefined;
+    // const grep: string | undefined = testOptions ? testOptions.grep : undefined;
     const timeout: number | undefined = testOptions ? testOptions.timeout : undefined;
-    const options: MochaSetupOptions = {
-        ui: 'tdd',
-        useColors: true,
-        timeout,
-        grep
-    };
+    // const options: MochaSetupOptions = {
+    //     ui: 'tdd',
+    //     useColors: true,
+    //     timeout,
+    //     grep
+    // };
     const mocha: Mocha = new Mocha({
-        grep: new RegExp(grep),
+        grep: undefined,
         ui: 'tdd',
         reporter: path.join(__dirname, '../../.mocha-reporter/mocha-vsts-reporter.js'),
         timeout: timeout,
         reporterOptions: {
             useColors: false,
-            mochaFile: './derek-this-is-testlog.json',
+            mochaFile: './junit-report.xml',
             toConsole: true
          },
-        slow: null,
+        slow: undefined,
         bail: false
     });
     require('source-map-support').install();
