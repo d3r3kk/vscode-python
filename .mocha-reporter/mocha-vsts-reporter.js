@@ -126,7 +126,7 @@ function MochaVstsReporter(runner, options) {
     console.log(  // eslint-disable-line no-console
       '##vso[task.logdetail id=%s;name=%s;type=build;order=1]Begin test run.',
       this._entireRunTimelineGuid,
-      this._options.rootSuiteTitle);
+      this._generateSuiteTitle);
   }.bind(this));
 
   this._runner.on('suite', function(suite) {
