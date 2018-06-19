@@ -11,33 +11,45 @@ if ((Reflect as any).metadata === undefined) {
 import * as glob from 'glob';
 import * as Mocha from 'mocha';
 import * as path from 'path';
-// import { MochaSetupOptions } from 'vscode/lib/testrunner';
+import { MochaSetupOptions } from 'vscode/lib/testrunner';
 import * as vscodeMoscks from './vscode-mock';
 
 export function runTests(testOptions?: { grep?: string; timeout?: number }) {
     vscodeMoscks.initialize();
 
-    // const grep: string | undefined = testOptions ? testOptions.grep : undefined;
+    const grep: string | undefined = testOptions ? testOptions.grep : undefined;
     const timeout: number | undefined = testOptions ? testOptions.timeout : undefined;
-    // const options: MochaSetupOptions = {
-    //     ui: 'tdd',
-    //     useColors: true,
-    //     timeout,
-    //     grep
-    // };
-    const mocha: Mocha = new Mocha({
-        grep: undefined,
+
+    const options: MochaSetupOptions = {
         ui: 'tdd',
-        reporter: path.join(__dirname, '../../.mocha-reporter/mocha-vsts-reporter.js'),
-        timeout: timeout,
-        reporterOptions: {
-            useColors: false,
-            mochaFile: './junit-report.xml',
-            toConsole: true
-         },
-        slow: undefined,
-        bail: false
-    });
+        useColors: true,
+        timeout,
+        grep
+    };
+
+    let temp_mocha: Mocha = new Mocha(options);
+    if (process.env.MOCHA_REPORTER_JUNIT !== undefined && process.env.MOCHA_REPORTER_JUNIT.toLowerCase() === 'true') {
+        let reportFile: string = './junit-report.xml';
+        if (process.env.MOCHA_CI_REPORTFILE !== undefined) {
+            reportFile = process.env.MOCHA_CI_REPORTFILE;
+        }
+        temp_mocha = new Mocha({
+            grep: undefined,
+            ui: 'tdd',
+            reporter: path.join(__dirname, '../../.mocha-reporter/mocha-vsts-reporter.js'),
+            timeout: timeout,
+            reporterOptions: {
+                useColors: false,
+                mochaFile: reportFile,
+                toConsole: true
+            },
+            slow: undefined,
+            bail: false
+        });
+    }
+
+    const mocha: Mocha = temp_mocha;
+
     require('source-map-support').install();
     const testsRoot = __dirname;
     glob('**/**.unit.test.js', { cwd: testsRoot }, (error, files) => {
