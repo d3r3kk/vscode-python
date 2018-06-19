@@ -28,7 +28,7 @@ export function runTests(testOptions?: { grep?: string; timeout?: number }) {
     };
 
     let temp_mocha: Mocha = new Mocha(options);
-    if (process.env.MOCHA_REPORTER_JUNIT !== undefined && process.env.MOCHA_REPORTER_JUNIT.toLowerCase() === 'true') {
+    if (process.env.TF_BUILD !== undefined && process.env.TF_BUILD.toLowerCase() === 'true') {
         let reportFile: string = './junit-report.xml';
         if (process.env.MOCHA_CI_REPORTFILE !== undefined) {
             reportFile = process.env.MOCHA_CI_REPORTFILE;
