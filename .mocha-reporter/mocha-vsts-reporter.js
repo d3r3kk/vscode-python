@@ -100,6 +100,7 @@ function MochaVstsReporter(runner, options) {
   this._options = configureDefaults(options);
   this._runner = runner;
   this._generateSuiteTitle = this._options.useFullSuiteTitle ? fullSuiteTitle : defaultSuiteTitle;
+  this._testRunTitle = options.testRunTitle ? options.testRunTitle : 'Mocha Test Run';
 
   this._entireRunTimelineGuid = guid.v4();
   this._currentTestSuiteTimeline = '';
@@ -126,7 +127,7 @@ function MochaVstsReporter(runner, options) {
     console.log(  // eslint-disable-line no-console
       '##vso[task.logdetail id=%s;name=%s;type=build;order=1]Begin test run.',
       this._entireRunTimelineGuid,
-      this._generateSuiteTitle);
+      this._testRunTitle);
   }.bind(this));
 
   this._runner.on('suite', function(suite) {
@@ -135,17 +136,26 @@ function MochaVstsReporter(runner, options) {
 
       if (this._currentTestSuiteTimeline !== '') {
         console.log(  // eslint-disable-line no-console
-          '##vso[task.logdetail id=%s;state=Completed;result=%s]Finished test suite.',
+          '##vso[task.logdetail id=%s;name=%s;state=Completed;result=%s]Finished test suite: %s.',
           this._currentTestSuiteTimeline,
-          this._currentTestSuiteStatus);
+          this._currentTestSuiteName,
+          this._currentTestSuiteStatus,
+          this._currentTestSuiteName);
       }
+
+      // reset for the next test suite run...
       this._currentTestSuiteStatus = 'Unknown';
       this._currentTestSuiteTimeline = guid.v4();
+      this._currentTestSuiteName = suite.title;
+      if (!this._currentTestSuiteName || this._currentTestSuiteName === '') {
+          this._currentTestSuiteName = 'Unspecified test suite name.';
+      }
+
       console.log(  // eslint-disable-line no-console
         '##vso[task.logdetail id=%s;name=%s;type=build;order=1]Begin test suite: %s.',
         this._currentTestSuiteTimeline,
-        suite.title,
-        suite.title);
+        this._currentTestSuiteName,
+        this._currentTestSuiteName);
       }
   }.bind(this));
 
@@ -204,9 +214,21 @@ function MochaVstsReporter(runner, options) {
         overallStatus = 'Succeeded';
       }
     }
+
+    // close out the last test-suite run...
+    if (this._currentTestSuiteTimeline !== '') {
+        console.log(  // eslint-disable-line no-console
+          '##vso[task.logdetail id=%s;name=%s;state=Completed;result=%s]Finished test suite: %s.',
+          this._currentTestSuiteTimeline,
+          this._currentTestSuiteName,
+          this._currentTestSuiteStatus,
+          this._currentTestSuiteName);
+      }
+
     console.log(  // eslint-disable-line no-console
-      '##vso[task.logdetail id=%s;result=%s]Finish test run.',
+      '##vso[task.logdetail id=%s;name=%s;result=%s]Finish test run.',
       this._entireRunTimelineGuid,
+      this._testRunTitle,
       overallStatus);
 
     this.flush(testsuites);
