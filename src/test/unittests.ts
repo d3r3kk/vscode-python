@@ -12,6 +12,7 @@ import * as glob from 'glob';
 import * as Mocha from 'mocha';
 import * as path from 'path';
 import { MochaSetupOptions } from 'vscode/lib/testrunner';
+import { MOCHA_CI_REPORTFILE, MOCHA_REPORTER_JUNIT } from './ciConstants';
 import * as vscodeMoscks from './vscode-mock';
 
 export function runTests(testOptions?: { grep?: string; timeout?: number }) {
@@ -27,25 +28,24 @@ export function runTests(testOptions?: { grep?: string; timeout?: number }) {
         grep
     };
 
-    let temp_mocha: Mocha = new Mocha(options);
-    if (process.env.MOCHA_REPORTER_JUNIT !== undefined && process.env.MOCHA_REPORTER_JUNIT.toLowerCase() === 'true') {
-        let reportFile: string = './junit-report.xml';
-        if (process.env.MOCHA_CI_REPORTFILE !== undefined) {
-            reportFile = process.env.MOCHA_CI_REPORTFILE;
-        }
+    let temp_mocha: Mocha | undefined;
+
+    if (MOCHA_REPORTER_JUNIT === true) {
         temp_mocha = new Mocha({
             grep: undefined,
             ui: 'tdd',
-            reporter: path.join(__dirname, '../../.mocha-reporter/mocha-vsts-reporter.js'),
-            timeout: timeout,
+            timeout,
+            reporter: '../../../.mocha-reporter/mocha-vsts-reporter.js',
             reporterOptions: {
                 useColors: false,
-                mochaFile: reportFile,
-                toConsole: true
+                mochaFile: MOCHA_CI_REPORTFILE
             },
             slow: undefined,
             bail: false
         });
+    } else {
+        // we are running on the command line or debugger...
+        temp_mocha = new Mocha(options);
     }
 
     const mocha: Mocha = temp_mocha;
