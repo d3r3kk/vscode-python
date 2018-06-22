@@ -38,10 +38,10 @@ export function runTests(testOptions?: { grep?: string; timeout?: number }) {
             reporter: '../../../.mocha-reporter/mocha-vsts-reporter.js',
             reporterOptions: {
                 useColors: false,
-                mochaFile: MOCHA_CI_REPORTFILE
+                mochaFile: MOCHA_CI_REPORTFILE,
+                bail: false
             },
-            slow: undefined,
-            bail: false
+            slow: undefined
         });
     } else {
         // we are running on the command line or debugger...

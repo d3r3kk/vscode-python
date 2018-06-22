@@ -19,7 +19,7 @@ function MochaVstsReporter(runner, options) {
       indentLevel++;
       indenter = INDENT_BASE.repeat(indentLevel);
     } else {
-      console.log('%sSTART SUITE: %s', indenter, suite.title);
+      console.log('%sStart "%s"', indenter, suite.title);
       indentLevel++;
       indenter = INDENT_BASE.repeat(indentLevel);
     }
@@ -31,7 +31,7 @@ function MochaVstsReporter(runner, options) {
       indenter = '';
       console.log('.............End test run.');
     } else {
-      console.log('%sEND SUITE: %s', indenter, suite.title);
+      console.log('%sEnd "%s"', indenter, suite.title);
       indentLevel--;
       indenter = INDENT_BASE.repeat(indentLevel);
       // ##vso[task.setprogress]current operation
@@ -40,23 +40,23 @@ function MochaVstsReporter(runner, options) {
   
   runner.on('pass', function(test){
     passes++;
-    console.log('%sSUCCESS: %s (%dms)', indenter, test.title, test.duration);
+    console.log('%s✓ %s (%dms)', indenter, test.title, test.duration);
   });
 
   runner.on('pending', function(test){
     skipped++;
-    console.log('%sSKIPPED: %s', indenter, test.title);
+    console.log('%s- %s', indenter, test.title);
     console.log('##vso[task.logissue type=warning;sourcepath=%s;]SKIPPED TEST %s :: %s', test.file, test.parent.title, test.title);
   });
 
   runner.on('fail', function(test, err){
     failures++;
-    console.log('%sFAILED: %s -- error: %s', indenter, test.title, err.message);
+    console.log('%s✖ %s -- error: %s', indenter, test.title, err.message);
     console.log('##vso[task.logissue type=warning;sourcepath=%s;]SKIPPED TEST %s :: %s', test.file, test.parent.title, test.title);
   });
 
   runner.on('end', function(){
-    console.log('VSTS end: %d/%d (%d skipped)', passes, passes + failures, skipped);
+    console.log('SUMMARY: %d/%d passed, %d skipped', passes, passes + failures, skipped);
   });
 }
 
