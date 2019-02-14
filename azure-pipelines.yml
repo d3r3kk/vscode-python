@@ -44,3 +44,9 @@ steps:
       python -m pip install numpy
 
     displayName: 'pip install numpy'
+
+
+  - bash: |
+      python -m pip install --upgrade -r ./build/functional-test-requirements.txt
+
+    displayName: 'python install functional reqs'
