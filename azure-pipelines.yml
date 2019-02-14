@@ -23,7 +23,7 @@ steps:
     inputs:
       versionSpec: '2.7'
       addToPath: true
-      architecture: x64
+      architecture: x86
 
   - bash: echo SHOW ACQUIRED PYTHON
 
