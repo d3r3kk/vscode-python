@@ -1,0 +1,46 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+steps:
+
+  - bash: |
+      printenv
+
+    displayName: 'Show all env vars'
+
+
+  - task: UsePythonVersion@0
+    displayName: 'Use Python 2.7'
+
+    inputs:
+      versionSpec: '2.7'
+      addToPath: true
+      architecture: x64
+
+  - bash: echo SHOW ACQUIRED PYTHON
+
+      echo Python Version = `python --version`
+
+      echo Reported Python Path = `python -c "import sys;print(sys.executable)"`
+
+    displayName: 'Show Python Version'
+  
+
+  - bash: |
+      python -m pip install -U pip
+
+    displayName: 'Update pip to latest'
+
+
+  - bash: |
+      python -m pip install --upgrade -r ./build/functional-test-requirements.txt
+
+    displayName: 'pip install functional requirements'
