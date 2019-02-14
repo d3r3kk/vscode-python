@@ -23,7 +23,7 @@ steps:
     inputs:
       versionSpec: '2.7'
       addToPath: true
-      architecture: x86
+      architecture: x64
 
   - bash: echo SHOW ACQUIRED PYTHON
 
@@ -41,6 +41,6 @@ steps:
 
 
   - bash: |
-      python -m pip install --upgrade -r ./build/functional-test-requirements.txt
+      python -m pip install numpy
 
-    displayName: 'pip install functional requirements'
+    displayName: 'pip install numpy'
