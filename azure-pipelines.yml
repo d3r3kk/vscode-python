@@ -18,7 +18,7 @@ jobs:
   
   pool:
     name: $(LNX_POOL_NAME)
-  continueOnError: $(ContinueOn)
+  continueOnError: false
 
   steps:
   - bash: |
@@ -32,8 +32,8 @@ jobs:
     ContinueOn: $(ContinueOn)
   pool:
     name: $(WIN_POOL_NAME)
-  continueOnError: $(ContinueOn)
-
+  continueOnError: true
+  
   steps:
   - bash: |
       echo Agent is: $AGENT_OS
