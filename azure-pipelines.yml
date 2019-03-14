@@ -13,7 +13,7 @@ jobs:
 
 - job: 'LinuxStuff'
   pool:
-    vmImage: variables.VM_IMAGE
+    vmImage: $VM_IMAGE
   continueOnError: $[eq('Linux', variables['AGENT_OS'])]
 
   steps:
