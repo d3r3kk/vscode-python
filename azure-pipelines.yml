@@ -1,0 +1,22 @@
+# Python package
+# Create and test a Python package on multiple Python versions.
+# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+
+trigger:
+- master
+
+variables:
+  VM_IMAGE: 'Ubuntu-16.04'
+
+jobs:
+
+- job: 'LinuxStuff'
+  pool:
+    vmImage: VM_IMAGE
+  continueOnError: $[eq('Linux', variables['AGENT_OS'])]
+
+  steps:
+  - script: |
+      raise error "Test cases failed !!!"
+    displayName: 'pytest'
