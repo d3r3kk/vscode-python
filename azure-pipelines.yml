@@ -7,16 +7,29 @@ trigger:
 - master
 
 variables:
-  VM_IMAGE: 'Ubuntu-16.04'
+  LNX_POOL_NAME: 'Hosted Ubuntu 1604'
+  WIN_POOL_NAME: 'Hosted VS2017'
 
 jobs:
 
 - job: 'LinuxStuff'
   pool:
-    vmImage: $(VM_IMAGE)
+    name: $(LNX_POOL_NAME)
   continueOnError: $[eq('Linux', variables['AGENT_OS'])]
 
   steps:
-  - script: |
+  - bash: |
+      echo Agent is: $(AGENT_OS)
+      raise error "Test cases failed !!!"
+    displayName: 'pytest'
+
+- job: 'WindowsStuff'
+  pool:
+    name: $(WIN_POOL_NAME)
+  continueOnError: $[eq('Linux', variables['AGENT_OS'])]
+
+  steps:
+  - bash: |
+      echo Agent is: $(AGENT_OS)
       raise error "Test cases failed !!!"
     displayName: 'pytest'
