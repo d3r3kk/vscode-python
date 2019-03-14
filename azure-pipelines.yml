@@ -9,27 +9,34 @@ trigger:
 variables:
   LNX_POOL_NAME: 'Hosted Ubuntu 1604'
   WIN_POOL_NAME: 'Hosted VS2017'
-
+  
 jobs:
 
 - job: 'LinuxStuff'
+  variables:
+    ContinueOn: $[eq('Linux', variables['AGENT_OS'])]
+  
   pool:
     name: $(LNX_POOL_NAME)
-  continueOnError: $[eq('Linux', variables['AGENT_OS'])]
+  continueOnError: $(ContinueOn)
 
   steps:
   - bash: |
-      echo Agent is: $(AGENT_OS)
+      echo Agent is: $AGENT_OS
+      echo Continue on error is: $ContinueOn
       raise error "Test cases failed !!!"
     displayName: 'pytest'
 
 - job: 'WindowsStuff'
+  variables:
+    ContinueOn: $(ContinueOn)
   pool:
     name: $(WIN_POOL_NAME)
-  continueOnError: $[eq('Linux', variables['AGENT_OS'])]
+  continueOnError: $(ContinueOn)
 
   steps:
   - bash: |
-      echo Agent is: $(AGENT_OS)
+      echo Agent is: $AGENT_OS
+      echo Continue on error is: $ContinueOn
       raise error "Test cases failed !!!"
     displayName: 'pytest'
